@@ -1,28 +1,93 @@
 # Overall Disease Burden
 
-```{r}
+```{r message=FALSE, echo=FALSE}
 # Load necessary packages
-pacman::p_load(tidyverse, knitr, here)
+pacman::p_load(tidyverse, knitr, here, kableExtra)
 
 # Import the overall disease data
 data_overall <- read_csv(here("data", "burden-of-disease-all-causes.csv"))
 ```
 
+
+
+
 ## Table of Estimates for Overall Disease Burden Over Time
 
-```{r}
+```{r echo=FALSE}
 # Here render a table for the DALY burden over time for the three countries 
 # You should pivot the data to show each country in a separate column.
 # Use kable() from the knitr package to render the table.
+#install.packages("kableExtra")
+
+#head(data_overall)
+countries <- data_overall %>% 
+              rename(DALYs = "DALYs (Disability-Adjusted Life Years) - All causes - Sex: Both - Age: Age-standardized (Rate)") %>% 
+              filter(Entity %in% c("Nigeria", "Jamaica", "Ghana"))
+
+
+countries_wide <- countries %>% 
+              select(-Code) %>% 
+              pivot_wider(names_from = Entity, values_from = DALYs) %>% 
+              kable(caption = "DALYs Burden for Ghana, Jamaica. and Nigeria") %>% 
+              kable_styling()
+#head(countries)
+countries_wide
+#summary((countries))
+#kable(countries_wide) %>% kable_styling()
 ```
+
+
+
+
+
+
+
+
 
 ## Plot Showing Trends in Overall Disease Burden Over Time
 
-```{r}
+```{r echo=FALSE}
 # Here, plot a line graph showing the trend of DALY burden for the chosen countries over time. You can use ggplot2 to create this plot. Each country's line should be a different color.
+ggplot(countries, aes(x = Year, y = DALYs , color = Entity)) +
+  geom_line() +
+  labs(title = "Trend of DALYs Burden Over Time",
+       x = "Year",
+       y = "DALY Burden") +
+  theme_minimal()
 ```
 
-## Summary of Overall Disease Burden Findings
 
-Provide a brief analysis based on the data presented in the table and chart. Highlight any significant findings or patterns. About 3 sentences.
+
+
+
+## Summary of Overall Disease Burden Findings
+The burden of DALYs remained stable for Nigeria and Ghana throughout the decade spanning from 1990 to 2000, before gradually declining until the conclusion of the study in 2020. Meanwhile, Jamaica exhibited the lowest DALYs, which remained largely consistent over the observed time period. Among the three countries, Nigeria consistently reported the highest DALYs at any given point during the study period.
+
+
+
+
+## Cummalative Overall Burden for Ghana, Jamaica, and Nigeria
+
+```{r echo=FALSE}
+# CHALLENGE (OPTIONAL)
+#head(countries)
+cum_dalys <- countries %>% 
+              group_by(Year) %>% 
+              summarise(cummulative_daly = sum(DALYs))
+#cum_dalys
+
+ggplot(data = cum_dalys, mapping = aes(x = Year, y = cummulative_daly)) +
+              geom_line() +
+              labs(title = "Cummulative DALYs with Time for Ghana, Jamaica, and Nigeria",
+                   x = "Year",
+                   y = "Cummulative DALYs for Ghana, Jamaica, and Nigeria") +
+                theme_minimal()
+
+
+
+```
+
+
+
+
 
