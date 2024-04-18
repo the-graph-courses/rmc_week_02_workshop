@@ -2,7 +2,7 @@
 
 ```{r}
 # Load necessary packages
-pacman::p_load(tidyverse, knitr, here)
+pacman::p_load(tidyverse, knitr, here, janitor)
 
 # Import the non-communicable diseases data
 data_ncd <- read_csv(here("data", "burden-of-disease-ncd.csv"))
@@ -14,16 +14,63 @@ data_ncd <- read_csv(here("data", "burden-of-disease-ncd.csv"))
 # Here render a table for the DALY burden over time for the three countries 
 # You should pivot the data to show each country in a separate column.
 # Use kable() from the knitr package to render the table.
+
+data_ncd2 <- data_ncd %>%
+  rename(DALYS = `DALYs (Disability-Adjusted Life Years) - Non-communicable diseases - Sex: Both - Age: Age-standardized (Rate)`) %>% 
+  filter(Entity %in% c("Nigeria", "Jamaica", "Ghana"))
+
+ data_ncd2
 ```
 
-## Plot Showing Trends in NCD Burden Over Time 
+```{r}
+ncd_data <- data_ncd2 %>% 
+  mutate(DALYS = round(DALYS)) %>% 
+  select(Entity, Year, DALYS) %>% 
+  pivot_wider(names_from = Entity, values_from = DALYS)
+ kable(ncd_data, align = "lccc", "pipe", caption ="Table of Estimates for NCD Burden Over Time" )
+```
+
+## Plot Showing Trends in NCD Burden Over Time
 
 ```{r}
-# Here, plot a line graph showing the trend of DALY burden for the chosen countries over time. You can use ggplot2 to create this plot. Each country's line should be a different color.
+
+ggplot(data_ncd2) +
+  aes(x = Year, y = DALYS, colour = Entity) +
+  geom_point(shape = "circle", size =2) +
+  scale_color_hue(direction = 1) +
+  theme_minimal() +
+  labs(title = "Trends in NCD Burden Over Time",
+       caption = "Figure 1",
+       x = "Years",
+       y = "Disability-Adjusted Life Years (DALY)",
+       color = "Country")
 ```
 
 ## Summary of NCD Burden Findings
 
-Provide a brief analysis based on the data presented in the table and chart. Highlight any significant findings or patterns. About 3 sentences.
+In the 30-year period shown in Figure 1 above, the burden of Non-Communicable Diseases (NCDs) continues to drop at a very low rate for Nigeria and Ghana. While Jamaica may not have comparative levels of NCDs with Nigeria and Ghana, a precipitous drop in the 5-year period between 2000 and 2005 only led to a similar rate of increase over the next five years to 2010, where it has since plateaued. Given that the data is looking at NCDs, it may be difficult to adduce a reason for the increase.
 
+### Cumulative DALY Burden for NCDs
 
+```{r}
+cum_daly <- data_ncd2 %>%
+  group_by(Entity) %>% 
+  mutate(cumul_daly = round(cumsum(DALYS)))
+cum_daly
+```
+
+```{r}
+ggplot(cum_daly) +
+  aes(x = Year, y = cumul_daly, colour = Entity) +
+  geom_point(shape = "circle", size =2) +
+  scale_y_continuous(labels = scales::comma)+
+  scale_color_hue(direction = 1) +
+  theme_minimal() +
+  labs(title = "Cumulative Trends in NCD Burden Over Time",
+       caption = "Figure 2",
+       x = "Years",
+       y = "Cumul. DALY",
+       color = "Country")
+```
+
+The cumulative trends show that the burden of NCDs in the three countries has grown exponentially over the 30 years covered in the analysis. The trends in Ghana and Nigeria are similar, with just a slight difference from Jamaica.
