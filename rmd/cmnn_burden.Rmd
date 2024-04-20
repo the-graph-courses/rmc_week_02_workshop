@@ -2,7 +2,7 @@
 
 ```{r}
 # Load necessary packages
-pacman::p_load(tidyverse, knitr, here)
+pacman::p_load(tidyverse, knitr, here, ggplot2)
 
 # Import the communicable diseases data
 data_cmnn <- read_csv(here("data", "burden-of-disease-cmnn.csv"))
@@ -14,16 +14,58 @@ data_cmnn <- read_csv(here("data", "burden-of-disease-cmnn.csv"))
 # Here render a table for the DALY burden over time for the three countries 
 # You should pivot the data to show each country in a separate column.
 # Use kable() from the knitr package to render the table.
+# Load required libraries
+library(tidyverse)
+library(knitr)
+
+# Rename the DALYS long name
+burden_of_disease_cmnn_clean <- burden_of_disease_cmnn %>%
+ rename(DALYS =`DALYs (Disability-Adjusted Life Years) - Communicable, maternal, neonatal, and nutritional diseases - Sex: Both - Age: Age-standardized (Rate)` )
+
+# Filter the dataframe to include only Ghana, Jamaica, and Nigeria
+selected_countries_cmnn <- burden_of_disease_cmnn_clean %>%
+  filter(Entity %in% c("Ghana", "Jamaica", "Nigeria"))
+
+# View the resulting filtered dataframe
+print(selected_countries_cmnn)
+
+# Pivot the data (each country has its own column)
+selected_countries_cmnn_wide <- selected_countries_cmnn %>% 
+  pivot_wider(names_from = Entity, values_from = DALYS)
+
+# Install the kableExtra package if it's not already installed
+if (!require("kableExtra")) {
+  install.packages("kableExtra")
+}
+# Load the kableExtra package
+library(kableExtra)
+# Render the table with kable()
+kable(selected_countries_cmnn_wide, format = "html", caption = "DALYS burden of communicable, maternal, neonatal, and nutritional diseases Over Time for Ghana,Jamaica and Nigeria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
 ```
 
 ## Plot Showing Trends in CMNN Burden Over Time
 
 ```{r}
 # Here, plot a line graph showing the trend of DALY burden for the chosen countries over time. You can use ggplot2 to create this plot. Each country's line should be a different color.
+library(ggplot2)
+selected_countries_cmnn_plots <- ggplot(data = selected_countries_cmnn) +
+  aes(x = Year, y = DALYS, color = Entity) +
+  geom_point() +
+  labs(title = "DALYS burden of CMNND",        x = "Year", 
+       y = "DALYS Burden",
+       color = "Country") +
+  theme_minimal() + 
+  scale_color_manual(values = c("Ghana" = "blue", "Jamaica" = "green", "Nigeria" = "red")) 
+print(selected_countries_cmnn_plots)
+```
+
+
+```{r}
+ggsave(plot = selected_countries_cmnn_plots, filename = "dalys_cmnn_plot.png")
+
 ```
 
 ## Summary of CMNN Burden Findings
-
-Provide a brief analysis based on the data presented in the table and chart. Highlight any significant findings or patterns. About 3 sentences.
-
-
+Between 1990 and 2020, the DALYS burden of communicable, maternal, neonatal, and nutritional (CMNND) diseases over Time in Nigeria is much higher than in Ghana and Jamaica. Even though staying at a very low rate, the decline in the burden of CMNND in Jamaica is very slow over time, while in Nigeria and Ghana we see a significant decline over time during the same period. 
