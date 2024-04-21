@@ -1,6 +1,6 @@
 # Non-Communicable Disease Burden (NCD)
 
-```{r}
+```{r echo=FALSE, message=FALSE}
 # Load necessary packages
 pacman::p_load(tidyverse, knitr, here, janitor)
 
@@ -10,7 +10,7 @@ data_ncd <- read_csv(here("data", "burden-of-disease-ncd.csv"))
 
 ## Table of Estimates for NCD Burden Over Time
 
-```{r}
+```{r echo=FALSE, message=FALSE}
 # Here render a table for the DALY burden over time for the three countries 
 # You should pivot the data to show each country in a separate column.
 # Use kable() from the knitr package to render the table.
@@ -19,10 +19,10 @@ data_ncd2 <- data_ncd %>%
   rename(DALYS = `DALYs (Disability-Adjusted Life Years) - Non-communicable diseases - Sex: Both - Age: Age-standardized (Rate)`) %>% 
   filter(Entity %in% c("Nigeria", "Jamaica", "Ghana"))
 
- data_ncd2
+ #data_ncd2
 ```
 
-```{r}
+```{r echo=FALSE}
 ncd_data <- data_ncd2 %>% 
   mutate(DALYS = round(DALYS)) %>% 
   select(Entity, Year, DALYS) %>% 
@@ -32,7 +32,7 @@ ncd_data <- data_ncd2 %>%
 
 ## Plot Showing Trends in NCD Burden Over Time
 
-```{r}
+```{r echo=FALSE}
 
 ggplot(data_ncd2) +
   aes(x = Year, y = DALYS, colour = Entity) +
@@ -52,14 +52,14 @@ In the 30-year period shown in Figure 1 above, the burden of Non-Communicable Di
 
 ### Cumulative DALY Burden for NCDs
 
-```{r}
+```{r echo=FALSE}
 cum_daly <- data_ncd2 %>%
   group_by(Entity) %>% 
   mutate(cumul_daly = round(cumsum(DALYS)))
-cum_daly
+#cum_daly
 ```
 
-```{r}
+```{r echo=FALSE}
 ggplot(cum_daly) +
   aes(x = Year, y = cumul_daly, colour = Entity) +
   geom_point(shape = "circle", size =2) +
