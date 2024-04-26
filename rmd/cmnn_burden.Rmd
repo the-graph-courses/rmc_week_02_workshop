@@ -1,6 +1,6 @@
 # Communicable, Maternal, Neonatal, and Nutritional Disease Burden (CMNN)
 
-```{r}
+```{r echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='hide'}
 # Load necessary packages
 pacman::p_load(tidyverse, knitr, here,scales,kableExtra)
 
@@ -10,7 +10,7 @@ data_cmnn <- read_csv(here("data", "burden-of-disease-cmnn.csv"))
 
 ## Table of Estimates for CMNN Burden Over Time
 
-```{r}
+```{r echo=FALSE}
 data_cmnn %>%
   filter(Code %in% c("MWI", "ZMB", "ZWE")) %>%
   rename(DAILYS = `DALYs (Disability-Adjusted Life Years) - Communicable, maternal, neonatal, and nutritional diseases - Sex: Both - Age: Age-standardized (Rate)`) %>%
@@ -26,7 +26,7 @@ data_cmnn %>%
 
 ## Plot Showing Trends in CMNN Burden Over Time
 
-```{r}
+```{r echo=FALSE}
 data_cmnn %>%
   filter(Code %in% c("MWI", "ZMB", "ZWE")) %>%
   ggplot(aes(x = Year, y = `DALYs (Disability-Adjusted Life Years) - Communicable, maternal, neonatal, and nutritional diseases - Sex: Both - Age: Age-standardized (Rate)`, group = Code, color = Code)) +
@@ -36,10 +36,10 @@ data_cmnn %>%
        x = "Year",
        y = "DALYs Burden (Age-standardized Rate)",
        color = "Country Code") +
-  theme_minimal() +
   scale_color_manual(values = c("MWI" = "blue", "ZMB" = "green", "ZWE" = "red")) # Assign specific colors to each country
 
 ```
+
 
 ## Summary of CMNN Burden Findings
 

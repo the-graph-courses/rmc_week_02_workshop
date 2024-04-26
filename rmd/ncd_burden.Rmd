@@ -1,6 +1,6 @@
 # Non-Communicable Disease Burden (NCD)
 
-```{r}
+```{r echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='hide'}
 # Load necessary packages
 pacman::p_load(tidyverse, knitr, here)
 
