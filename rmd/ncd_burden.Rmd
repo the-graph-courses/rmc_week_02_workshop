@@ -1,8 +1,8 @@
 # Non-Communicable Disease Burden (NCD)
 
-```{r}
+```{r echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='hide'}
 # Load necessary packages
-pacman::p_load(tidyverse, knitr, here)
+pacman::p_load(tidyverse, knitr, here,scales,kableExtra)
 
 # Import the non-communicable diseases data
 data_ncd <- read_csv(here("data", "burden-of-disease-ncd.csv"))
@@ -11,19 +11,37 @@ data_ncd <- read_csv(here("data", "burden-of-disease-ncd.csv"))
 ## Table of Estimates for NCD Burden Over Time
 
 ```{r}
-# Here render a table for the DALY burden over time for the three countries 
-# You should pivot the data to show each country in a separate column.
-# Use kable() from the knitr package to render the table.
+data_ncd %>%
+  filter(Code %in% c("MWI", "ZMB", "ZWE")) %>%
+  rename(DAILYS = `DALYs (Disability-Adjusted Life Years) - Non-communicable diseases - Sex: Both - Age: Age-standardized (Rate)`) %>%
+  select(Code, Year, DAILYS) %>%
+  pivot_wider(names_from = Code, values_from = DAILYS) %>%
+  mutate(across(-Year, ~ format(
+    comma(., accuracy = 1), nsmall = 0, big.mark = ","
+  ))) %>%
+  kable(format = "html", escape = FALSE) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"),
+                full_width = FALSE)
 ```
 
 ## Plot Showing Trends in NCD Burden Over Time 
 
 ```{r}
-# Here, plot a line graph showing the trend of DALY burden for the chosen countries over time. You can use ggplot2 to create this plot. Each country's line should be a different color.
+data_ncd %>%
+  filter(Code %in% c("MWI", "ZMB", "ZWE")) %>%
+  rename(DAILYS = `DALYs (Disability-Adjusted Life Years) - Non-communicable diseases - Sex: Both - Age: Age-standardized (Rate)`) %>%  
+  ggplot(aes(x = Year, y = DAILYS, group = Code, color = Code)) +
+  geom_line() +
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "Trend of DALY Burden Over Time",
+       x = "Year",
+       y = "DALYs Burden (Age-standardized Rate)",
+       color = "Country Code") +
+  theme_minimal() +
+  scale_color_manual(values = c("MWI" = "blue", "ZMB" = "green", "ZWE" = "red")) # Assign specific colors to each country
 ```
 
 ## Summary of NCD Burden Findings
 
-Provide a brief analysis based on the data presented in the table and chart. Highlight any significant findings or patterns. About 3 sentences.
-
+Zimbabwe had the  highest DALYS in the  90's and the trend changed around 2010 .Malawi then became the highest on this indicator
 

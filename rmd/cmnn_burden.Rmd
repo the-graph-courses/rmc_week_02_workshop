@@ -1,8 +1,8 @@
 # Communicable, Maternal, Neonatal, and Nutritional Disease Burden (CMNN)
 
-```{r}
+```{r echo=FALSE, results='hide', message=FALSE, warning=FALSE, fig.show='hide'}
 # Load necessary packages
-pacman::p_load(tidyverse, knitr, here)
+pacman::p_load(tidyverse, knitr, here,scales,kableExtra)
 
 # Import the communicable diseases data
 data_cmnn <- read_csv(here("data", "burden-of-disease-cmnn.csv"))
@@ -10,20 +10,39 @@ data_cmnn <- read_csv(here("data", "burden-of-disease-cmnn.csv"))
 
 ## Table of Estimates for CMNN Burden Over Time
 
-```{r}
-# Here render a table for the DALY burden over time for the three countries 
-# You should pivot the data to show each country in a separate column.
-# Use kable() from the knitr package to render the table.
+```{r echo=FALSE}
+data_cmnn %>%
+  filter(Code %in% c("MWI", "ZMB", "ZWE")) %>%
+  rename(DAILYS = `DALYs (Disability-Adjusted Life Years) - Communicable, maternal, neonatal, and nutritional diseases - Sex: Both - Age: Age-standardized (Rate)`) %>%
+  select(Code, Year, DAILYS) %>%
+  pivot_wider(names_from = Code, values_from = DAILYS) %>%
+  mutate(across(-Year, ~ format(
+    comma(., accuracy = 1), nsmall = 0, big.mark = ","
+  ))) %>%
+  kable(format = "html", escape = FALSE) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"),
+                full_width = FALSE) 
 ```
 
 ## Plot Showing Trends in CMNN Burden Over Time
 
-```{r}
-# Here, plot a line graph showing the trend of DALY burden for the chosen countries over time. You can use ggplot2 to create this plot. Each country's line should be a different color.
+```{r echo=FALSE}
+data_cmnn %>%
+  filter(Code %in% c("MWI", "ZMB", "ZWE")) %>%
+  ggplot(aes(x = Year, y = `DALYs (Disability-Adjusted Life Years) - Communicable, maternal, neonatal, and nutritional diseases - Sex: Both - Age: Age-standardized (Rate)`, group = Code, color = Code)) +
+  geom_line() +
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "Trend of DALY Burden Over Time",
+       x = "Year",
+       y = "DALYs Burden (Age-standardized Rate)",
+       color = "Country Code") +
+  scale_color_manual(values = c("MWI" = "blue", "ZMB" = "green", "ZWE" = "red")) # Assign specific colors to each country
+
 ```
+
 
 ## Summary of CMNN Burden Findings
 
-Provide a brief analysis based on the data presented in the table and chart. Highlight any significant findings or patterns. About 3 sentences.
+Malawi's DALY's were highest in the eealy 90's but this changed in the 2000's where  the highest was Zimabwe's.
 
 
