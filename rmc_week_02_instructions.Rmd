@@ -79,7 +79,7 @@ Before we get started, everyone should **log in to your GitHub accounts and have
 
 ## Fork original repo (Partner 1)
 
-Pick one group member to be the repo "owner" (Partner 1). They will fork the template repository from here: [https://github.com/the-graph-courses/rmc_2024_week_02_workshop](https://github.com/the-graph-courses/rmc_q3_2024_week_02_workshop){.uri}.
+Pick one group member to be the repo "owner" (Partner 1). They will fork the template repository from here: <https://github.com/the-graph-courses/rmc_week_02_workshop>.
 
 **NOTE**: Please choose someone who is able to screenshare.
 
